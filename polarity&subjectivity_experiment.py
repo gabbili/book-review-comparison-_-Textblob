@@ -84,9 +84,9 @@ def process_folder(folder_path, polarity_bins, subjectivity_bins):
     return doc_df, pol_dist, sub_dist, len(all_sentences)
 
 def main():
-    human_folder = '/Users/jiechenli/Desktop/book review/experiment/human'
-    machine_folder = '/Users/jiechenli/Desktop/book review/experiment/GPT'
-    output_excel = 'sentiment_analysis_results.xlsx'
+    human_folder = '/Users/jiechenli/Desktop/book review/Word'
+    machine_folder = '/Users/jiechenli/Desktop/book review/LLm/G'
+    output_excel = 'sentiment_analysis_results_overall.xlsx'
 
     polarity_bins = [-1.0, -0.5, 0.0, 0.5, 1.0]
     subjectivity_bins = [0.0, 0.25, 0.5, 0.75, 1.0]
@@ -105,6 +105,28 @@ def main():
             machine_doc.to_excel(writer, sheet_name='Machine polarities', index=False)
             machine_pol.to_excel(writer, sheet_name='Machine polarity distribution', index=False)
             machine_sub.to_excel(writer, sheet_name='Machine subjectivity distribution', index=False)
+
+    if not human_doc.empty:
+        human_combined = human_doc[human_doc['name'] == 'combined_text']
+        if not human_combined.empty:
+            h_pol = human_combined.iloc[0]['overall_polarity']
+            h_sub = human_combined.iloc[0]['overall_subjectivity']
+            print(f'Human combined polarity: {h_pol:.4f}, subjectivity: {h_sub:.4f}')
+        else:
+            print('Human combined text not found')
+    else:
+        print('No human reviews found.')
+
+    if not machine_doc.empty:
+        machine_combined = machine_doc[machine_doc['name'] == 'combined_text']
+        if not machine_combined.empty:
+            m_pol = machine_combined.iloc[0]['overall_polarity']
+            m_sub = machine_combined.iloc[0]['overall_subjectivity']
+            print(f'Machine combined polarity: {m_pol:.4f}, subjectivity: {m_sub:.4f}')
+        else:
+            print('Machine combined text not found')
+    else:
+        print('No machine reviews found.')
 
     abs_path = os.path.abspath(output_excel)
     print(f'The analysis is finished, and the results are saved to {abs_path}')
